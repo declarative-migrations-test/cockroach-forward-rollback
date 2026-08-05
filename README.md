@@ -1,15 +1,25 @@
-# CockroachDB rollback end-to-end certification
+# cockroach-forward-rollback
 
-This repository continuously certifies `declarative-migrations/declarative-postgres-migrate.rs` against a live CockroachDB instance.
+Repeated forward and destructive rollback certification against a live CockroachDB instance under Cockroach DDL semantics.
 
-The workflow pins production commit `21eb846e356b2a5aff068b21e77903e6cca50452`, builds the real `dpm` CLI, and exercises repeated forward migrations, gated destructive rollback, approved rollback, idempotency, final convergence, and row preservation on CockroachDB 25.2.4.
+This repository is part of the isolated `declarative-migrations-test` certification fleet. It pins the production implementation as a Git submodule at `declarative-migrations/declarative-postgres-migrate.rs@21eb846e356b2a5aff068b21e77903e6cca50452` and exercises real PostgreSQL and/or CockroachDB instances in GitHub Actions.
 
-## Local run
+## Fleet
+
+- `.github`
+- `postgres-forward-rollback`
+- `cockroach-forward-rollback`
+- `cross-engine-compatibility`
+- `concurrent-migrator-lock`
+- `failure-injection-atomicity`
+- `schema-drift-detection`
+- `cli-mcp-contract`
+
+## Local contract
 
 ```bash
-docker run --rm -d --name dm-cockroach -p 26257:26257 cockroachdb/cockroach:v25.2.4 start-single-node --insecure
+git submodule update --init --recursive
 scripts/build-dpm.sh
-DPM_BIN="$PWD/vendor/dpm/target/release/dpm" scripts/test-cockroachdb-rollback.sh
 ```
 
-The test creates and removes its own throwaway database.
+Every behavior change must add a regression, preserve exact dependency pinning, avoid credentials in source or logs, and land through a pull request.

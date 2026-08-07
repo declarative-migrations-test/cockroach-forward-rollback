@@ -1,0 +1,7 @@
+services:
+  cockroach:
+    image: ${COCKROACH_IMAGE:-cockroachdb/cockroach:v24.1.2}
+    command: start-single-node --insecure --store=type=mem,size=1GiB
+    ports:
+    - 26257:26257
+    - 8080:8080
